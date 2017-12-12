@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<ul id='ul1'></ul>
+		<script src="JSON.js"></script>
+		<script src="ajax.js"></script>
+		<script>
+			
+			ajax('get','getNews.php','',function(data){
+				var html = '';
+					var oUL = document.getElementById("ul1")
+					var data = JSON.parse(data);
+					for(var i = 0;i<data.length;i++){
+						html+='<li><a href = "">'+data[i].title+'</a>[<span>'+data[i].date+'</span>]</li>'
+					}
+					oUL.innerHTML = html;
+			});
+			setInterval(function(){
+				ajax('get','getNews.php','',function(data){
+				var html = '';
+					var oUL = document.getElementById("ul1")
+					var data = JSON.parse(data);
+					for(var i = 0;i<data.length;i++){
+						html+='<li><a href = "">'+data[i].title+'</a>[<span>'+data[i].date+'</span>]</li>'
+					}
+					oUL.innerHTML = html;
+			});
+				},1000);
+		</script>
+	</body>
+</html>

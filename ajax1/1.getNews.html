@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<input type="button" id='btn' value="生成新闻"/>
+		<ul id='ul'></ul>
+		<script src="JSON.js"></script>
+		<script>
+			var oBtn = document.getElementById("btn");
+			oBtn.onclick = function(){
+				var xhr = null;
+				try{
+					xhr = new XMLHttpRequest();
+				}catch(e){
+					xhr = new ActiveXObject('Microsoft,XMLHTTP');
+				}
+				xhr.open('get','getNews.php',true);
+				xhr.send();
+				xhr.onreadystatechange = function(){
+					if(xhr.readyState==4){
+						if(xhr.status==200){
+							var html = '';
+							var data = ''
+							
+							data = JSON.parse(xhr.responseText);
+							for(var i=0;i<data.length;i++){
+								html+='<li><a href = "">'+data[i].title+'</a>[<span>'+data[i].date+'</span>]</li>'
+							}
+							ul.innerHTML = html;
+						}else{
+							aler('出错了出错了Err:'+xhr.status);
+						}
+					}
+				}
+			}
+		</script>
+		
+	</body>
+</html>

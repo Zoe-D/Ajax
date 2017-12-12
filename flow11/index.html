@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			body,ul,div{margin: 0;}
+			#ul1{
+				width: 1050px;
+				margin:0 auto;
+				list-style: none;
+			}
+			#ul1 li{
+				width: 250px;
+				float: left;
+				
+				margin-right: 10px;
+			}
+			#ul1 li div{
+				border:1px solid #e1e1e1;
+				padding: 10px;
+				margin-bottom: 10px;
+			}
+			#ul1 li img,#ul1 li p{
+				width: 218px;
+			}
+			.clearfix{
+				*zoom:1;
+			}
+			.clearfix:after{
+				content: '';
+				display: block;
+				clear: both;
+			}
+		</style>
+	</head>
+	<body>
+		<ul id= 'ul1' class="clearfix">
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+		<script src="ajax.js"></script>
+		<script src="JSON.js"></script>
+<script>
+window.onload = function(){
+	var oUl = document.getElementById("ul1");
+	var aLi = oUl.getElementsByTagName('li');
+	var ipage=1;
+	var onOff = true;
+	
+	//初始化数据处理
+	setList();
+	
+	function setList(){
+		ajax('get','getPics.php','cpage='+ipage,function(data){
+			var data  = JSON.parse(data);
+			//判断是否有数据
+			if(!data.length){
+				alert('没有数据了')
+				return;
+			}
+			
+			for(var i = 0;i<data.length;i++){
+				var shortIndex = getshort();
+				//初始化数据
+				var oDiv = document.createElement('div');
+				var oImg = document.createElement('img');
+				oImg.src = data[i].preview;
+				//解决图片没加载出来，错误判断了li高度问题，给img直接赋值高度
+				oImg.style.height = data[i].height * ( 218/data[i].width) + 'px';
+				console.log(oImg.height)
+				oDiv.appendChild(oImg);
+				
+				var oP = document.createElement('p'); 
+				oP.title = data[i].title;
+				oDiv.appendChild(oP);
+				//找到最短的li将数据赋值给最短的那个
+				aLi[shortIndex].appendChild(oDiv);
+			}
+			onOff =true;
+		});
+	}
+	
+	//如果滚动到最短的li的最下端，要加载cpage的新的一个页
+	window.onscroll = function(){
+		
+		var _index = getshort();
+		var liTop = getTop(aLi[_index])+aLi[_index].offsetHeight;
+		//滚动距离
+		var oscrollTop = document.documentElement.scrollTop||document.body.scrollTop;
+		
+		//可视区+滚动距离>liTop，就加载新的一页
+		if(liTop < (oscrollTop+document.documentElement.clientHeight)){
+			
+			if(onOff){
+				onOff = false;
+				ipage++;
+				setList();
+			}
+			
+		}
+		
+	}
+	
+	//找出四个li哪个最短?
+	function getshort(){
+		var index = 0;//默认第一个最短
+		var shortHeight = aLi[index].offsetHeight;
+		for (var i = 0; i < aLi.length; i++) {
+		    if(aLi[i].offsetHeight<shortHeight){
+		    	index = i;
+		    	shortHeight = aLi[i].offsetHeight;
+		    }
+		}
+		return index;
+	}
+	
+	//获取元素到页面顶部的距离
+	function getTop(obj){
+		var iTop = 0;
+		while(obj){
+			iTop += obj.offsetTop;
+			obj = obj.offsetParent;
+		}
+		return iTop;
+	}
+}
+</script>
+	</body>
+</html>
